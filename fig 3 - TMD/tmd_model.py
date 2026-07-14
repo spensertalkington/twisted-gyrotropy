@@ -44,19 +44,19 @@ def geometry(theta, a=params["a"], nu=params["nu"], eps=0, strain_dir=0):
     """
 
     # bottom: rotated, then strained
-    Rb = R(+theta/2)
+    Rb = R(+theta/2) #R inverse transpose is R
     Sb = strain_matrix(eps=+eps/2, strain_dir=strain_dir, nu=nu)
     Sb_inv = np.linalg.inv(Sb).T
 
     # top: rotated, then strained
-    Rt = R(-theta/2)
+    Rt = R(-theta/2) #R inverse transpose is R
     St = strain_matrix(eps=-eps/2, strain_dir=strain_dir, nu=nu)
     St_inv = np.linalg.inv(St).T
 
     # layer-resolved reciprocal vectors
-    Kmag = 4*np.pi/(3*a)
-    b1_0 = Kmag * np.array([3/2, -np.sqrt(3)/2])
-    b2_0 = Kmag * np.array([3/2,  np.sqrt(3)/2])
+    Kmono = 4*np.pi/(3*a)
+    b1_0 = Kmono * np.array([3/2, -np.sqrt(3)/2])
+    b2_0 = Kmono * np.array([3/2,  np.sqrt(3)/2])
 
     b1_b = Sb_inv @ Rb @ b1_0
     b2_b = Sb_inv @ Rb @ b2_0
@@ -73,7 +73,7 @@ def geometry(theta, a=params["a"], nu=params["nu"], eps=0, strain_dir=0):
     K_b = Sb_inv @ Rb @ K0
     K_t = St_inv @ Rt @ K0
 
-    # spacing between K points
+    #spacing between K points
     qK = K_b - K_t
 
     ΔK1 = +0.5*qK
@@ -108,8 +108,8 @@ def H_TMD(k,θ, cutoff, a=params["a"], ms=params["ms"], V=params["V"], psi=param
     for i in range(0,dim,1): 
         n1 = i//nx-cutoff
         n2 = i%nx-cutoff
-        H_11[i,i] = -h2_2m*np.linalg.norm(k-ΔK1+n1*G1+n2*G2)**2
-        H_22[i,i] = -h2_2m*np.linalg.norm(k-ΔK2+n1*G1+n2*G2)**2
+        H_11[i,i] = -h2_2m*np.linalg.norm(k-ΔK1+n1*G1+n2*G2)**2 #bottom
+        H_22[i,i] = -h2_2m*np.linalg.norm(k-ΔK2+n1*G1+n2*G2)**2 #top
 
     #interlayer potential terms
     def idx(n1,n2): #convert between 2d lattice of possible momentum scatterings to a 1D representation (columns/rows of a matrix)
